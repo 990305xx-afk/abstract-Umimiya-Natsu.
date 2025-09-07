@@ -9,14 +9,11 @@
       padding: 0;
       width: 100%;
       height: 100%;
-    }
-    body {
-      background: url('https://i.meee.com.tw/dczdKgU.png') no-repeat center center;
-      background-size: cover;
-      position: relative;
       overflow: hidden;
       font-family: Arial, sans-serif;
       cursor: pointer;
+      background: url('https://i.meee.com.tw/dczdKgU.png') no-repeat center center;
+      background-size: cover;
     }
 
     #tip {
@@ -58,21 +55,30 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      display: none;
+      opacity: 0;
       z-index: 5;
       transition: opacity 0.5s ease;
-      opacity: 0;
     }
     #resultImage.show {
       opacity: 1;
     }
+
+    #fireworksCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9; 
+    }
   </style>
 </head>
 <body>
-
   <div id="tip">點螢幕任意地方再一次</div>
   <button id="drawButton"></button>
   <img id="resultImage" src="" alt="">
+  <canvas id="fireworksCanvas"></canvas>
 
   <script>
     const images = [
@@ -87,8 +93,66 @@
     const drawButton = document.getElementById("drawButton");
     const result = document.getElementById("resultImage");
     const tip = document.getElementById("tip");
-
     let drawn = false;
+
+    const canvas = document.getElementById("fireworksCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let fireworks = [];
+
+    class Firework {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.particles = [];
+        for (let i = 0; i < 200; i++) {
+          this.particles.push({
+            x: this.x,
+            y: this.y,
+            speed: Math.random() * 8 + 4,
+            angle: Math.random() * 2 * Math.PI,
+            alpha: 1,
+            radius: Math.random() * 3 + 3 
+          });
+        }
+      }
+
+      update() {
+        this.particles.forEach(p => {
+          p.x += Math.cos(p.angle) * p.speed;
+          p.y += Math.sin(p.angle) * p.speed + 0.1;
+          p.alpha -= 0.02;
+        });
+        this.particles = this.particles.filter(p => p.alpha > 0);
+      }
+
+      draw() {
+        this.particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
+          ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+          ctx.fill();
+        });
+      }
+
+      done() {
+        return this.particles.length === 0;
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fireworks.forEach(fw => {
+        fw.update();
+        fw.draw();
+      });
+      fireworks = fireworks.filter(fw => !fw.done());
+      requestAnimationFrame(animate);
+    }
+
+    animate();
 
     drawButton.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -97,78 +161,31 @@
 
       const randomIndex = Math.floor(Math.random() * images.length);
       result.src = images[randomIndex];
-      result.style.display = "block";
       result.classList.add("show");
 
       drawButton.style.display = "none";
       tip.style.display = "block";
+
+      for (let i = 0; i < 15; i++) {
+        fireworks.push(new Firework(
+          Math.random() * canvas.width,
+          Math.random() * canvas.height / 2
+        ));
+      }
     });
 
     document.body.addEventListener("click", () => {
       if (!drawn) return;
-      result.style.display = "none";
       result.classList.remove("show");
       drawButton.style.display = "block";
-      drawn = false;
       tip.style.display = "none"; 
+      drawn = false;
     });
-    <script>
-      <script>
-  function createFireworks() {
-    const fireworksContainer = document.createElement('div');
-    fireworksContainer.style.position = 'fixed';
-    fireworksContainer.style.top = '0';
-    fireworksContainer.style.left = '0';
-    fireworksContainer.style.width = '100%';
-    fireworksContainer.style.height = '100%';
-    fireworksContainer.style.pointerEvents = 'none';
-    fireworksContainer.style.zIndex = '40';
-    document.body.appendChild(fireworksContainer);
 
-    const numParticles = 100; 
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-
-    for (let i = 0; i < numParticles; i++) {
-      const particle = document.createElement('div');
-      particle.style.position = 'absolute';
-      particle.style.width = '6px';
-      particle.style.height = '6px';
-      particle.style.borderRadius = '50%';
-      particle.style.background = 'white';
-      particle.style.left = centerX + 'px';
-      particle.style.top = centerY + 'px';
-      particle.style.pointerEvents = 'none';
-      fireworksContainer.appendChild(particle);
-
-      const angle = Math.random() * 2 * Math.PI;
-      const distance = Math.random() * window.innerWidth * 0.5 + 100; 
-      const duration = 1000 + Math.random() * 500;
-
-      particle.animate([
-        { transform: 'translate(0,0) scale(1)', opacity: 1 },
-        { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px) scale(0.5)`, opacity: 0 }
-      ], { duration: duration, easing: 'ease-out', fill: 'forwards' });
-
-      setTimeout(() => particle.remove(), duration);
-    }
-
-    setTimeout(() => fireworksContainer.remove(), 1500);
-  }
-
-  drawButton.addEventListener("click", (e) => {
-    e.stopPropagation();
-    if (drawn) return;
-    drawn = true;
-
-    const randomIndex = Math.floor(Math.random() * images.length);
-    result.src = images[randomIndex];
-
-    showResultWithEffect();
-
-    createFireworks();
-
-    drawButton.style.display = "none";
-    tip.style.display = "block";
-  });
-</script>
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
