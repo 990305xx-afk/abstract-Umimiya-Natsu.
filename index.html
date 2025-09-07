@@ -116,3 +116,42 @@
 
 </body>
 </html>
+
+<script>
+  function createParticles(x, y) {
+    for (let i = 0; i < 20; i++) {
+      const particle = document.createElement('div');
+      particle.style.position = 'absolute';
+      particle.style.width = '8px';
+      particle.style.height = '8px';
+      particle.style.borderRadius = '50%';
+      particle.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
+      particle.style.left = x + 'px';
+      particle.style.top = y + 'px';
+      particle.style.pointerEvents = 'none';
+      particle.style.zIndex = 30;
+      document.body.appendChild(particle);
+
+      const angle = Math.random() * 2 * Math.PI;
+      const distance = Math.random() * 100 + 50;
+
+      particle.animate([
+        { transform: `translate(0, 0) scale(1)`, opacity: 1 },
+        { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px) scale(0)`, opacity: 0 }
+      ], {
+        duration: 800 + Math.random()*400,
+        easing: 'ease-out',
+        fill: 'forwards'
+      });
+
+      setTimeout(() => particle.remove(), 1200);
+    }
+  }
+
+  drawButton.addEventListener("click", (e) => {
+    const rect = drawButton.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    createParticles(centerX, centerY);
+  });
+</script>
