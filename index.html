@@ -1,119 +1,135 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
-  <meta charset="UTF-8">
-  <title>紅鼻子抽籤</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-    }
-    body {
-      background: url('https://i.meee.com.tw/dczdKgU.png') no-repeat center center;
-      background-size: cover;
-      position: relative;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      cursor: pointer;
-    }
+<meta charset="UTF-8">
+<title>紅鼻子抽籤特效版</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    font-family: Arial, sans-serif; overflow: hidden;
+  }
 
-    #tip {
-      position: absolute;
-      top: 50%;
-      right: 30px; 
-      transform: translateY(-50%);
-      font-size: 2rem;
-      color: white;
-      text-shadow: 1px 1px 4px black;
-      z-index: 20;
-      display: none;
-      writing-mode: vertical-rl; 
-      text-orientation: upright; 
-    }
+  body {
+    background: url('https://i.meee.com.tw/dczdKgU.png') no-repeat center center;
+    background-size: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
 
-    #drawButton {
-      position: absolute;
-      top: calc(42% - 60px);   
-      left: calc(63% + 140px - 7.5px);
-      width: 30px;
-      height: 30px;
-      background: red;
-      border: none;
-      border-radius: 50%;
-      cursor: pointer;
-      z-index: 10;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-    #drawButton:hover {
-      background: darkred;
-      transform: scale(1.2);
-    }
+  #tip {
+    position: absolute;
+    top: 50%; right: 30px;
+    transform: translateY(-50%);
+    font-size: 2rem;
+    color: white;
+    text-shadow: 1px 1px 4px black;
+    z-index: 20;
+    display: none;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
 
-    #resultImage {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-      z-index: 5;
-      transition: opacity 0.5s ease;
-      opacity: 0;
-    }
-    #resultImage.show {
-      opacity: 1;
-    }
-  </style>
+  #drawButton {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50px; height: 50px;
+    background: red;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+  }
+
+  @keyframes ripple {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  #resultImage {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.5);
+    width: 300px; height: 300px;
+    object-fit: contain;
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    z-index: 5;
+  }
+
+  #resultImage.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+</style>
 </head>
 <body>
 
-  <div id="tip">點螢幕任意地方再一次</div>
-  <button id="drawButton"></button>
-  <img id="resultImage" src="" alt="">
+<div id="tip">點螢幕任意地方再一次</div>
+<button id="drawButton"></button>
+<img id="resultImage" src="" alt="">
 
-  <script>
-    const images = [
-      "https://i.meee.com.tw/dt1U8Is.png",
-      "https://i.meee.com.tw/w7Rzbww.png",
-      "https://i.meee.com.tw/WOmw3cy.png",
-      "https://i.meee.com.tw/0O9gcE4.png"
-    ];
+<script>
+  const images = [
+    "https://i.meee.com.tw/dt1U8Is.png",
+    "https://i.meee.com.tw/w7Rzbww.png",
+    "https://i.meee.com.tw/WOmw3cy.png",
+    "https://i.meee.com.tw/0O9gcE4.png"
+  ];
 
-    images.forEach(src => new Image().src = src);
+  images.forEach(src => new Image().src = src);
 
-    const drawButton = document.getElementById("drawButton");
-    const result = document.getElementById("resultImage");
-    const tip = document.getElementById("tip");
+  const drawButton = document.getElementById("drawButton");
+  const result = document.getElementById("resultImage");
+  const tip = document.getElementById("tip");
+  let drawn = false;
 
-    let drawn = false;
+  drawButton.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (drawn) return;
+    drawn = true;
 
-    drawButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (drawn) return;
-      drawn = true;
+    const ripple = document.createElement("span");
+    ripple.className = "ripple";
+    ripple.style.left = (e.offsetX - 25) + "px";
+    ripple.style.top = (e.offsetY - 25) + "px";
+    drawButton.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
 
-      const randomIndex = Math.floor(Math.random() * images.length);
-      result.src = images[randomIndex];
-      result.style.display = "block";
-      result.classList.add("show");
+    const randomIndex = Math.floor(Math.random() * images.length);
+    result.src = images[randomIndex];
+    result.classList.add("show");
 
-      drawButton.style.display = "none";
-      tip.style.display = "block";
-    });
+    tip.style.display = "block";
+    setTimeout(() => tip.style.opacity = 1, 50);
 
-    document.body.addEventListener("click", () => {
-      if (!drawn) return;
-      result.style.display = "none";
-      result.classList.remove("show");
-      drawButton.style.display = "block";
-      drawn = false;
-      tip.style.display = "none"; 
-    });
-  </script>
+    drawButton.style.display = "none";
+
+    document.body.style.transform = "scale(1.05)";
+    setTimeout(() => document.body.style.transform = "scale(1)", 200);
+  });
+
+  document.body.addEventListener("click", () => {
+    if (!drawn) return;
+    result.classList.remove("show");
+    drawButton.style.display = "block";
+    drawn = false;
+
+    tip.style.opacity = 0;
+    setTimeout(() => tip.style.display = "none", 500);
+  });
+</script>
 
 </body>
 </html>
-
