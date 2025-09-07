@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>紅鼻子抽籤</title>
   <style>
     html, body {
@@ -11,8 +12,7 @@
       height: 100%;
       overflow: hidden;
       font-family: Arial, sans-serif;
-      cursor: pointer;
-      background: url('https://i.meee.com.tw/dczdKgU.png') no-repeat center center;
+      background: url('https://i.meee.com.tw/29FFDxU.png') no-repeat center center;
       background-size: cover;
     }
 
@@ -32,10 +32,11 @@
 
     #drawButton {
       position: absolute;
-      top: calc(42% - 60px);   
-      left: calc(63% + 140px - 7.5px);
-      width: 30px;
-      height: 30px;
+      top: 50%;   
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 120px;
+      height: 120px;
       background: red;
       border: none;
       border-radius: 50%;
@@ -45,7 +46,7 @@
     }
     #drawButton:hover {
       background: darkred;
-      transform: scale(1.2);
+      transform: translate(-50%, -50%) scale(1.1);
     }
 
     #resultImage {
@@ -77,7 +78,7 @@
 <body>
   <div id="tip">點螢幕任意地方再一次</div>
   <button id="drawButton"></button>
-  <img id="resultImage" src="" alt="">
+  <img id="resultImage" src="" alt="結果圖">
   <canvas id="fireworksCanvas"></canvas>
 
   <script>
