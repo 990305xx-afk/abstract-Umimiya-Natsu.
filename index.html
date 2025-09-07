@@ -113,55 +113,47 @@
       tip.style.display = "none"; 
     });
     <script>
-  function showResultWithEffect() {
-    result.style.display = "block";
-    result.style.opacity = 0;
-    result.style.transform = "scale(0.5)";
-    
-    let start = null;
-    function animate(timestamp) {
-      if (!start) start = timestamp;
-      let progress = (timestamp - start) / 500; // 0~1
-      if (progress > 1) progress = 1;
-      result.style.opacity = progress;
-      result.style.transform = `scale(${0.5 + 0.5*progress})`;
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        result.animate([
-          { transform: "scale(1)" },
-          { transform: "scale(1.1)" },
-          { transform: "scale(1)" }
-        ], { duration: 300, easing: "ease-out" });
-      }
-    }
-    requestAnimationFrame(animate);
-  }
+      <script>
+  function createFireworks() {
+    const fireworksContainer = document.createElement('div');
+    fireworksContainer.style.position = 'fixed';
+    fireworksContainer.style.top = '0';
+    fireworksContainer.style.left = '0';
+    fireworksContainer.style.width = '100%';
+    fireworksContainer.style.height = '100%';
+    fireworksContainer.style.pointerEvents = 'none';
+    fireworksContainer.style.zIndex = '40';
+    document.body.appendChild(fireworksContainer);
 
-  function createParticles(x, y) {
-    for (let i = 0; i < 30; i++) {
+    const numParticles = 100; 
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    for (let i = 0; i < numParticles; i++) {
       const particle = document.createElement('div');
       particle.style.position = 'absolute';
       particle.style.width = '6px';
       particle.style.height = '6px';
       particle.style.borderRadius = '50%';
-      particle.style.background = `hsl(${Math.random()*360}, 100%, 50%)`;
-      particle.style.left = x + 'px';
-      particle.style.top = y + 'px';
+      particle.style.background = 'white';
+      particle.style.left = centerX + 'px';
+      particle.style.top = centerY + 'px';
       particle.style.pointerEvents = 'none';
-      particle.style.zIndex = 50;
-      document.body.appendChild(particle);
+      fireworksContainer.appendChild(particle);
 
       const angle = Math.random() * 2 * Math.PI;
-      const distance = Math.random() * 120 + 50;
+      const distance = Math.random() * window.innerWidth * 0.5 + 100; 
+      const duration = 1000 + Math.random() * 500;
 
       particle.animate([
-        { transform: `translate(0,0) scale(1)`, opacity: 1 },
-        { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px) scale(0)`, opacity: 0 }
-      ], { duration: 800 + Math.random()*400, easing: 'ease-out', fill: 'forwards' });
+        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+        { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px) scale(0.5)`, opacity: 0 }
+      ], { duration: duration, easing: 'ease-out', fill: 'forwards' });
 
-      setTimeout(() => particle.remove(), 1200);
+      setTimeout(() => particle.remove(), duration);
     }
+
+    setTimeout(() => fireworksContainer.remove(), 1500);
   }
 
   drawButton.addEventListener("click", (e) => {
@@ -174,10 +166,7 @@
 
     showResultWithEffect();
 
-    const rect = drawButton.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    createParticles(centerX, centerY);
+    createFireworks();
 
     drawButton.style.display = "none";
     tip.style.display = "block";
