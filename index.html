@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>紅鼻子</title>
+  <title>紅鼻子抽籤</title>
   <style>
     html, body {
       margin: 0;
@@ -88,12 +88,12 @@
       "https://i.meee.com.tw/WOmw3cy.png",
       "https://i.meee.com.tw/0O9gcE4.png",
       "https://i.meee.com.tw/zwjMtq3.jpg",
-      "https://i.meee.com.tw/tPxBP5t.jpg",
       "https://i.meee.com.tw/XzhcBjV.jpeg",
       "https://i.meee.com.tw/n5AC0LE.jpeg",
       "https://i.meee.com.tw/MNudpkT.png"
     ];
 
+    // 預載圖片避免顯示延遲
     images.forEach(src => {
       const img = new Image();
       img.src = src;
@@ -123,8 +123,7 @@
             speed: Math.random() * 8 + 4,
             angle: Math.random() * 2 * Math.PI,
             alpha: 1,
-            radius: Math.random() * 3 + 3,
-            color: Math.random() * 360
+            radius: Math.random() * 3 + 3 
           });
         }
       }
@@ -142,7 +141,7 @@
         this.particles.forEach(p => {
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.radius, 0, 2 * Math.PI);
-          ctx.fillStyle = `hsla(${p.color}, 100%, 70%, ${p.alpha})`;
+          ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
           ctx.fill();
         });
       }
@@ -153,9 +152,7 @@
     }
 
     function animate() {
-      ctx.fillStyle = "rgba(0,0,0,0.2)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       fireworks.forEach(fw => {
         fw.update();
         fw.draw();
